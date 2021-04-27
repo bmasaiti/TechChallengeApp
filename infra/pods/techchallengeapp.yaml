@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: techchallengeapp-deployment
+  labels:
+    app: techchallengeapp
+spec:
+  selector:
+    matchLabels:
+      app: techchallengeapp
+  replicas: 1
+  template:
+    metadata: 
+      name: techchallengeapp
+      labels:
+        app: techchallengeapp
+    spec:
+      containers:
+        - name: techchallengeapp
+          image: servian/techchallengeapp:latest 
+          imagePullPolicy: Always
+          command: ["./TechChallengeApp"]
+          args: [updatedb,serve]
+          env:
+            - name: VTT_DBHOST
+              value: techchallengedB 
+            - name: VTT_DBNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: techchallengeapp-config
+                  key: VTT_DBNAME
+            - name: VTT_DBPORT
+              valueFrom:
+                configMapKeyRef:
+                  name: techchallengeapp-config
+                  key: VTT_DBPORT   
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: techchallengeapp-config
+                  key: VTT_DBUSER
+
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: techchallengeapp-secret
+                  key: VTT_DBPASSWORD                      
